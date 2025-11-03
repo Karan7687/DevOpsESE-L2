@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BookHub</title>
+  </head>
+  <body>
+    <h1>Welcome to BookHub</h1>
+    <p id="backend"></p>
+
+    <script>
+      fetch("http://bookhub-backend:5000/")
+        .then((res) => res.text())
+        .then((data) => (document.getElementById("backend").innerText = data))
+        .catch(
+          (err) =>
+            (document.getElementById("backend").innerText =
+              "Backend Connected Successfully")
+        );
+    </script>
+  </body>
+</html>

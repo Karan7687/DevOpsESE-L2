@@ -1,0 +1,104 @@
+# ---------- Backend ----------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookhub-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookhub-backend
+  template:
+    metadata:
+      labels:
+        app: bookhub-backend
+    spec:
+      containers:
+        - name: backend
+          image: docker.io/hashicorp/http-echo
+          args:
+            - "-text=BookHub Backend Running!"
+          ports:
+            - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookhub-backend
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5000
+  selector:
+    app: bookhub-backend
+
+# ---------- Database ----------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookhub-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookhub-db
+  template:
+    metadata:
+      labels:
+        app: bookhub-db
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:5.7
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: root
+            - name: MYSQL_DATABASE
+              value: bookhub
+          ports:
+            - containerPort: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookhub-db
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: bookhub-db
+
+# ---------- Frontend ----------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookhub-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookhub-frontend
+  template:
+    metadata:
+      labels:
+        app: bookhub-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: docker.io/hashicorp/http-echo
+          args:
+            - "-text=BookHub Frontend Running!"
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookhub-frontend
+spec:
+  type: NodePort
+  ports:
+    - port: 3000
+      nodePort: 32000
+  selector:
+    app: bookhub-frontend
